@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Appointment Data</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <form onsubmit="saveToServer(event)">
+    <label for="username">Name</label>
+    <input id="username" type="text" name="username" required>
+    <label for="email">Email Id</label>
+    <input id="email" type="text" name="email" required>
+    <label for="PhoneNumber">PhoneNumber</label>
+    <input id="PhoneNumber" type="text" name="PhoneNumber" required>
+    <button type="submit">Submit</button>
+  </form>
+  <ul id="listOfUsers"></ul>
+
+  <script>
+    function saveToServer(event) {
+      event.preventDefault();
+      const name = event.target.username.value;
+      const email = event.target.email.value;
+      const PhoneNumber = event.target.PhoneNumber.value;
+
+      const user = {
+        name,
+        email,
+        PhoneNumber
+      };
+
+      axios.post("https://crudcrud.com/api/cad458ae6c5c4e5188b3736efa257d46/appointmentData", user)
+        .then((response) => {
+          showNewUserOnScreen(response.data);
+          event.target.reset(); // Clear the form
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+
+      loadUserDataFromServer(); // Reload user data after adding
+    }
+
+    function loadUserDataFromServer() {
+      axios.get("https://crudcrud.com/api/cad458ae6c5c4e5188b3736efa257d46/appointmentData")
+        .then((response) => {
+          const userList = document.getElementById("listOfUsers");
+          userList.innerHTML = "";
+
+          response.data.forEach((user) => {
+            showNewUserOnScreen(user);
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+
+    function showNewUserOnScreen(user) {
+      const userList = document.getElementById('listOfUsers');
+      const listItem = document.createElement('li');
+      listItem.textContent = `Name: ${user.name} , Email: ${user.email} , Phone: ${user.PhoneNumber}`;
+      userList.appendChild(listItem);
+    }
+
+    window.onload = loadUserDataFromServer;
+  </script>
+</body>
+</html>
