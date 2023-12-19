@@ -1,71 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Appointment Data</title>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <title>AppointmentApp</title>
+   
 </head>
 <body>
-  <form onsubmit="saveToServer(event)">
-    <label for="username">Name</label>
-    <input id="username" type="text" name="username" required>
-    <label for="email">Email Id</label>
-    <input id="email" type="text" name="email" required>
-    <label for="PhoneNumber">PhoneNumber</label>
-    <input id="PhoneNumber" type="text" name="PhoneNumber" required>
-    <button type="submit">Submit</button>
-  </form>
-  <ul id="listOfUsers"></ul>
+    
+    
+      <form onsubmit="saveToServer(event)">
+        <label for="username">Name</label>
+        <input id="username" type="text" name="username" required>
+        <label for="email">Email Id</label>
+        <input id="email" type="text" name="email" required>
+        <label for="PhoneNumber">PhoneNumber</label>
+        <input id="PhoneNumber" type="text" name="PhoneNumber" required>
+        <button type="submit">Submit</button>
+      </form>
+    
+    <section id="userData">
+        <h2>User Data</h2>
+        <ul id="userList"></ul>
+    </section>
 
-  <script>
-    function saveToServer(event) {
-      event.preventDefault();
-      const name = event.target.username.value;
-      const email = event.target.email.value;
-      const PhoneNumber = event.target.PhoneNumber.value;
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.4/axios.min.js"></script>
+    <script>
+        function saveToServer(event) {
+            event.preventDefault();
+            const name = event.target.username.value;
+            const email = event.target.email.value;
+            const number = event.target.PhoneNumber.value;
 
-      const user = {
-        name,
-        email,
-        PhoneNumber
-      };
+            const user = {
+                name: name,
+                email: email,
+                number: number
+            };
 
-      axios.post("https://crudcrud.com/api/cad458ae6c5c4e5188b3736efa257d46/appointmentData", user)
-        .then((response) => {
-          showNewUserOnScreen(response.data);
-          event.target.reset(); // Clear the form
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+            axios.post("https://crudcrud.com/api/eadfa9c78e0e4fa988a2d06d6b67ba90/appointmentData", user)
+                .then((response) => {
+                    console.log(response);
+                    event.target.username.value = "";
+                    event.target.email.value = "";
+                    event.target.PhoneNumber.value = "";
+                    loadUserDataFromServer(); // Reload user data after adding
+                })
+                .catch((err) => {
+                    console.error(err);
+                });
+        }
 
-      loadUserDataFromServer(); // Reload user data after adding
-    }
+        function loadUserDataFromServer() {
+            axios.get("https://crudcrud.com/api/eadfa9c78e0e4fa988a2d06d6b67ba90/appointmentData")
+                .then((response) => {
+                    const userList = document.getElementById("userList");
+                    userList.innerHTML = "";
 
-    function loadUserDataFromServer() {
-      axios.get("https://crudcrud.com/api/cad458ae6c5c4e5188b3736efa257d46/appointmentData")
-        .then((response) => {
-          const userList = document.getElementById("listOfUsers");
-          userList.innerHTML = "";
+                    response.data.forEach((user, index) => {
+                        const listItem = document.createElement("li");
+                        listItem.textContent = `Name: ${user.name}, Email: ${user.email}, Number: ${user.number}`;
 
-          response.data.forEach((user) => {
-            showNewUserOnScreen(user);
-          });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
+                        const editButton = document.createElement("button");
+                        editButton.textContent = "Edit";
+                        editButton.onclick = () => editUser(index, user);
 
-    function showNewUserOnScreen(user) {
-      const userList = document.getElementById('listOfUsers');
-      const listItem = document.createElement('li');
-      listItem.textContent = `Name: ${user.name} , Email: ${user.email} , Phone: ${user.PhoneNumber}`;
-      userList.appendChild(listItem);
-    }
+                        const deleteButton = document.createElement("button");
+                        deleteButton.textContent = "Delete";
+                        deleteButton.onclick = () => deleteUser(user._id);
 
-    window.onload = loadUserDataFromServer;
-  </script>
+                        listItem.appendChild(editButton);
+                        listItem.appendChild(deleteButton);
+
+                        userList.appendChild(listItem);
+                    });
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
+
+        function editUser(index, user) {
+            const newName = prompt("Edit name:", user.name);
+            const newEmail = prompt("Edit email:", user.email);
+            const newNumber = prompt("Edit phone number:", user.number);
+
+            if (newName || newEmail || newNumber) {
+                const updatedUser = {
+                    name: newName || user.name,
+                    email: newEmail || user.email,
+                    number: newNumber || user.number,
+                };
+
+                axios.put(`https://crudcrud.com/api/eadfa9c78e0e4fa988a2d06d6b67ba90/appointmentData/${user._id}`, updatedUser)
+                    .then(() => {
+                        loadUserDataFromServer(); // Reload user data after editing
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            }
+        }
+
+        function deleteUser(userId) {
+            if (confirm("Are you sure you want to delete this user?")) {
+                axios.delete(`https://crudcrud.com/api/eadfa9c78e0e4fa988a2d06d6b67ba90/appointmentData/${userId}`)
+                    .then(() => {
+                        loadUserDataFromServer(); // Reload user data after deleting
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            }
+        }
+
+        window.onload = loadUserDataFromServer;
+    </script>
 </body>
 </html>
