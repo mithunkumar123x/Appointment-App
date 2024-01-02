@@ -40,7 +40,7 @@
                 number: number
             };
 
-            axios.post("https://crudcrud.com/api/eadfa9c78e0e4fa988a2d06d6b67ba90/appointmentData", user)
+            axios.post("https://crudcrud.com/api/d3ecb65dc31f4b1e84d94d8c479f9287/appointmentData", user)
                 .then((response) => {
                     console.log(response);
                     event.target.username.value = "";
@@ -54,7 +54,7 @@
         }
 
         function loadUserDataFromServer() {
-            axios.get("https://crudcrud.com/api/eadfa9c78e0e4fa988a2d06d6b67ba90/appointmentData")
+            axios.get("https://crudcrud.com/api/d3ecb65dc31f4b1e84d94d8c479f9287/appointmentData")
                 .then((response) => {
                     const userList = document.getElementById("userList");
                     userList.innerHTML = "";
@@ -94,7 +94,7 @@
                     number: newNumber || user.number,
                 };
 
-                axios.put(`https://crudcrud.com/api/eadfa9c78e0e4fa988a2d06d6b67ba90/appointmentData/${user._id}`, updatedUser)
+                axios.put(`https://crudcrud.com/api/d3ecb65dc31f4b1e84d94d8c479f9287/appointmentData/${user._id}`, updatedUser)
                     .then(() => {
                         loadUserDataFromServer(); // Reload user data after editing
                     })
@@ -106,7 +106,7 @@
 
         function deleteUser(userId) {
             if (confirm("Are you sure you want to delete this user?")) {
-                axios.delete(`https://crudcrud.com/api/eadfa9c78e0e4fa988a2d06d6b67ba90/appointmentData/${userId}`)
+                axios.delete(`https://crudcrud.com/api/d3ecb65dc31f4b1e84d94d8c479f9287/appointmentData/${userId}`)
                     .then(() => {
                         loadUserDataFromServer(); // Reload user data after deleting
                     })
